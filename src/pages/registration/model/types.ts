@@ -1,4 +1,8 @@
-export type Form = Readonly<Record<string, string>>;
+export type Form = Readonly<{
+  username: string;
+  email: string;
+  password: string;
+}>;
 
 export type Errors = Readonly<{
   errors: Readonly<Record<string, string>>;

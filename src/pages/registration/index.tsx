@@ -14,6 +14,7 @@ export const RegistrationPage: React.FC = () => (
         <p className="text-xs-center">
           <Link to={Paths.LOGIN}>Have an account?</Link>
         </p>
+
         <Errors />
         <Form />
       </div>
