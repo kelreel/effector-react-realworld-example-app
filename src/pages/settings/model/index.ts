@@ -1,5 +1,4 @@
-import { createEvent, createEffect, createStore, sample } from 'effector-root';
-import { createForm } from 'effector-forms';
+import { createEvent, createEffect, createStore } from 'effector-root';
 import { createGate } from 'effector-react';
 import { AxiosResponse, AxiosError } from 'axios';
 import { api } from 'api';
@@ -21,41 +20,13 @@ export const changeUserDataFx = createEffect<
 );
 
 export const FormGate = createGate();
-export const $authUser = user.model.$user.map((x) => x);
-
-export const form = createForm({
-  fields: {
-    image: {
-      init: '' as user.types.User['image'],
-    },
-    username: {
-      init: '' as user.types.User['username'],
-    },
-    bio: {
-      init: '' as user.types.User['bio'],
-    },
-    email: {
-      init: '' as user.types.User['email'],
-    },
-    password: {
-      init: '' as string,
-    },
-  },
-});
-
-// set data form user store
-sample({
-  source: $authUser,
-  clock: FormGate.open,
-  target: form.set,
-});
-
-// submit form
-sample({
-  source: form.$values,
-  clock: formSubmitted,
-  target: changeUserDataFx,
-});
+export const $user = user.model.$user.map((x) => ({
+  image: x.image,
+  username: x.username,
+  bio: x.bio,
+  email: x.email,
+  password: '',
+}));
 
 changeUserDataFx.done.watch(() => {
   window.location.reload();
@@ -69,4 +40,4 @@ export const $error = createStore<Errors>({
   errors: {},
 })
   .on(changeUserDataFx.failData, (_, error) => error.response?.data)
-  .reset(form.$values, FormGate.close);
+  .reset(changeUserDataFx, FormGate.close);
