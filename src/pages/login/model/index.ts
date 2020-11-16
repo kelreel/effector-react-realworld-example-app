@@ -1,11 +1,4 @@
-import {
-  createEvent,
-  createEffect,
-  createStore,
-  sample,
-  forward,
-} from 'effector-root';
-import { createForm } from 'effector-forms';
+import { createEvent, createEffect, createStore } from 'effector-root';
 import { createGate } from 'effector-react';
 import { AxiosError } from 'axios';
 import { api } from 'api';
@@ -26,34 +19,10 @@ export const signInFx = createEffect<Form, user.types.User, AxiosError>(
 
 export const FormGate = createGate();
 
-export const form = createForm({
-  fields: {
-    email: {
-      init: '' as Form['email'],
-    },
-    password: {
-      init: '' as Form['password'],
-    },
-  },
-});
-
-// submit form
-sample({
-  source: form.$values,
-  clock: formSubmitted,
-  target: signInFx,
-});
-
-// reset form
-forward({
-  from: FormGate.close,
-  to: form.reset,
-});
-
 user.model.$user.on(signInFx.doneData, (_, payload) => payload);
 
 export const $error = createStore<Errors>({
   errors: {},
 })
   .on(signInFx.failData, (_, error) => error.response?.data)
-  .reset(form.$values, FormGate.close);
+  .reset(signInFx, FormGate.close);
