@@ -1,25 +1,37 @@
 import React from 'react';
-import { useForm } from 'effector-forms';
+import { useForm } from 'react-hook-form';
+import { useStore } from 'effector-react';
 import { Form as UIForm, Textarea } from 'ui';
-import { form } from '../model';
+import * as model from '../model';
 import { FormFooter } from './form-footer';
 
-export const Form: React.FC = () => {
-  const { submit, fields } = useForm(form);
+type FormData = {
+  comment: string;
+};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submit();
+const defaultValues = {
+  comment: '',
+};
+
+export const Form: React.FC = () => {
+  const slug = useStore(model.$slug);
+  const { handleSubmit, register, reset } = useForm({
+    defaultValues,
+  });
+
+  const onSubmit = (data: FormData) => {
+    model.fetchCommentFx({ slug, body: data.comment });
+    reset(defaultValues);
   };
 
   return (
-    <UIForm className="card comment-form" onSubmit={handleSubmit}>
+    <UIForm className="card comment-form" onSubmit={handleSubmit(onSubmit)}>
       <div className="card-block">
         <Textarea
+          name="comment"
           placeholder="Write a comment..."
+          ref={register}
           rows={3}
-          value={fields.comment.value}
-          onChange={(e) => fields.comment.onChange(e.target.value)}
         />
       </div>
       <FormFooter />

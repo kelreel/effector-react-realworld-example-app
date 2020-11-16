@@ -7,7 +7,6 @@ import {
   attach,
   sample,
 } from 'effector-root';
-import { createForm } from 'effector-forms';
 import { createGate } from 'effector-react';
 import { AxiosError } from 'axios';
 import { api } from 'api';
@@ -46,38 +45,12 @@ export const $comments = restore(fetchCommentsFx.doneData, [])
     state.filter(({ id }) => id !== params.id),
   );
 
-export const form = createForm({
-  fields: {
-    comment: {
-      init: '' as string,
-    },
-  },
-});
-
 forward({
   from: $slug.updates,
   to: attach({
     source: $slug,
     effect: fetchCommentsFx,
   }),
-});
-
-// submit form
-forward({
-  from: form.submit,
-  to: attach({
-    source: {
-      slug: $slug,
-      body: form.fields.comment.$value,
-    },
-    effect: fetchCommentFx,
-  }),
-});
-
-// reset form
-forward({
-  from: fetchCommentFx,
-  to: form.reset,
 });
 
 sample({
@@ -94,4 +67,4 @@ export const $error = createStore<types.Errors>({
     [fetchCommentFx.failData, deleteCommentFx.failData],
     (_, error) => error.response?.data,
   )
-  .reset(form.$touched);
+  .reset(fetchCommentFx);

@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useGate } from 'effector-react';
 import { Form as UIForm, InputField } from 'ui';
 import * as model from '../model';
+import * as types from '../model/types';
 import { SubmitButton } from './submit-button';
 
 const defaultValues = {
@@ -16,12 +17,13 @@ export const Form: React.FC = () => {
     defaultValues,
   });
 
+  const onSubmit = (data: types.Form) => {
+    model.signInFx(data);
+    reset(defaultValues);
+  };
+
   return (
-    <UIForm
-      onSubmit={handleSubmit((data) => {
-        model.signInFx(data);
-        reset(defaultValues);
-      })}>
+    <UIForm onSubmit={handleSubmit(onSubmit)}>
       <Controller
         as={InputField}
         className="form-control-lg"
